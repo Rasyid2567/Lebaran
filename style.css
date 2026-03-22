@@ -1,0 +1,297 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Amiri:wght@700&display=swap');
+
+:root {
+    --primary: #064e3b;
+    --secondary: #059669;
+    --accent: #fbbf24;
+    --paper: #fdfbf7;
+    --gold: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
+    --gold-text: linear-gradient(45deg, #d4af37, #f3e5ab, #d4af37);
+}
+
+body {
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: radial-gradient(circle at center, #0a3f30 0%, #021a14 100%);
+    font-family: 'Poppins', sans-serif;
+    overflow: hidden;
+}
+
+.main-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.envelope-container {
+    position: relative;
+    width: 280px;
+    height: 380px;
+    perspective: 1500px;
+    cursor: pointer;
+}
+
+.envelope-back {
+    position: absolute;
+    inset: 0;
+    /* Mengubah bagian dalam amplop (pelapis dalam) agar kontras dari background website */
+    background: #e4c478;
+    background-image: radial-gradient(circle at top, #f3d994 0%, #9e730a 100%);
+    border-radius: 12px;
+    /* Bayangan ke dalam yang tebal agar terlihat dalam (lubang nyata) */
+    box-shadow: inset 0 15px 40px rgba(0,0,0,0.6), 0 15px 35px rgba(0,0,0,0.4);
+    z-index: 10;
+}
+
+.card {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    width: 250px;
+    height: 350px;
+    background: var(--paper);
+    border-radius: 8px;
+    z-index: 20; /* Di dalam saku, di belakang envelope-front */
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 15px;
+    box-sizing: border-box;
+    background-image: radial-gradient(#fffdf2 0%, #f6ebd1 100%);
+}
+
+.card-inner {
+    width: 100%;
+    height: 100%;
+    border: 2px solid #d4af37;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    padding: 20px;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+.card-inner::before, .card-inner::after {
+    content: '✧';
+    position: absolute;
+    color: #d4af37;
+    font-size: 24px;
+}
+
+.card-inner::before { top: 5px; left: 10px; }
+.card-inner::after { bottom: 5px; right: 10px; }
+
+/* Bagian Depan Saku Amplop */
+.envelope-front {
+    position: absolute;
+    inset: 0;
+    z-index: 30;
+    pointer-events: none;
+    border-radius: 12px;
+}
+
+/* 280 lebar = 140 sisi. 380 tinggi = +- 190. */
+.fold-left {
+    position: absolute;
+    top: 0; left: 0;
+    width: 0; height: 0;
+    border-left: 140px solid #059669; /* Emerald */
+    border-top: 190px solid transparent;
+    border-bottom: 190px solid transparent;
+}
+
+.fold-right {
+    position: absolute;
+    top: 0; right: 0;
+    width: 0; height: 0;
+    border-right: 140px solid #047857; /* Sedikit lebih gelap */
+    border-top: 190px solid transparent;
+    border-bottom: 190px solid transparent;
+}
+
+.fold-bottom {
+    position: absolute;
+    bottom: 0; left: 0;
+    width: 0; height: 0;
+    border-bottom: 210px solid #065f46;
+    border-left: 140px solid transparent;
+    border-right: 140px solid transparent;
+    filter: drop-shadow(0 -5px 10px rgba(0,0,0,0.25));
+}
+
+/* Tutup Amplop (Flap) */
+.envelope-flap {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    z-index: 40;
+    transform-origin: top;
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), z-index 0s 0.3s;
+    transform-style: preserve-3d;
+}
+
+.flap-triangle {
+    position: absolute;
+    top: 0; left: 0;
+    width: 0; height: 0;
+    border-top: 210px solid #064e3b;
+    border-left: 140px solid transparent;
+    border-right: 140px solid transparent;
+    filter: drop-shadow(0 8px 15px rgba(0,0,0,0.3));
+}
+
+/* Segel Wax */
+.seal {
+    position: absolute;
+    top: 180px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 55px;
+    height: 55px;
+    background: var(--gold);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 26px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.4), inset 0 2px 5px rgba(255,255,255,0.6);
+    transition: all 0.5s ease;
+    border: 2px solid #fff3cd;
+}
+
+/* Teks dan Typografi */
+.arabic {
+    font-family: 'Amiri', serif;
+    font-size: 34px;
+    color: #064e3b;
+    margin-bottom: -5px;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+}
+
+.gold-text {
+    background: var(--gold-text);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-size: 28px;
+    margin: 15px 0;
+    font-weight: 600;
+}
+
+.divider {
+    width: 60px;
+    height: 3px;
+    background: var(--gold);
+    margin: 15px 0;
+    border-radius: 2px;
+}
+
+p {
+    color: #333;
+    font-size: 13px;
+    font-weight: 600;
+    margin: 5px 0;
+}
+
+small {
+    color: #666;
+    font-size: 11px;
+    margin-top: 10px;
+}
+
+.hint {
+    color: var(--accent);
+    margin-top: 40px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 300;
+    letter-spacing: 1px;
+    animation: pulse 2s infinite;
+    transition: opacity 0.5s;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 0.7; transform: translateY(0); }
+    50% { opacity: 1; transform: translateY(5px); }
+}
+
+/* -- ANIMASI SAAT DIBUKA -- */
+
+/* Sembunyikan Tulisan Hint */
+.envelope-container.open ~ .hint {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Buka Tutup Amplop */
+.envelope-container.open .envelope-flap {
+    transform: rotateX(180deg);
+    z-index: 15; /* Snap to behind card at half animation */
+}
+
+/* Segel Hancur / Memudar */
+.envelope-container.open .seal {
+    transform: translateX(-50%) scale(0) rotate(90deg);
+    opacity: 0;
+}
+
+/* Tarik Kartu Keluar dengan Lembut */
+.envelope-container.open .card {
+    /* Stage 1: Geser ke atas (drawCard)
+       Stage 2: z-index pindah ke depan (cardZIndex) */
+    animation: 
+        drawCard 2.5s cubic-bezier(0.3, 0.9, 0.3, 1) forwards,
+        cardZIndex 2.5s linear forwards;
+    animation-delay: 0.4s;
+}
+
+@keyframes drawCard {
+    0% {
+        transform: translateY(0) rotate(0);
+    }
+    30% {
+        /* Naikkan kartu melewati saku depan */
+        transform: translateY(-280px) rotate(3deg);
+    }
+    100% {
+        /* Turunkan sedikit di depan dan perbesar */
+        transform: translateY(-20px) scale(1.15) rotate(0);
+        box-shadow: 0 35px 60px rgba(0,0,0,0.6);
+    }
+}
+
+@keyframes cardZIndex {
+    0%, 30% { z-index: 20; }
+    31%, 100% { z-index: 50; }
+}
+
+/* Partikel Bintang / Debu Peri */
+.stars {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.star {
+    position: absolute;
+    background: #fff;
+    border-radius: 50%;
+    animation: twinkle linear infinite;
+    pointer-events: none;
+}
+
+@keyframes twinkle {
+    0% { opacity: 0; transform: scale(0.5) translateY(0); }
+    50% { opacity: 1; transform: scale(1.2) translateY(-10px); }
+    100% { opacity: 0; transform: scale(0.5) translateY(-20px); }
+}
