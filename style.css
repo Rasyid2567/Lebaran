@@ -18,6 +18,7 @@ body {
     background: radial-gradient(circle at center, #0a3f30 0%, #021a14 100%);
     font-family: 'Poppins', sans-serif;
     overflow: hidden;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .main-wrapper {
@@ -32,6 +33,7 @@ body {
     height: 380px;
     perspective: 1500px;
     cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .envelope-back {
@@ -40,7 +42,6 @@ body {
     /* Mengubah bagian dalam amplop (pelapis dalam) agar kontras dari background website */
     background: #e4c478;
     background-image: radial-gradient(circle at top, #f3d994 0%, #9e730a 100%);
-    border-radius: 12px;
     /* Bayangan ke dalam yang tebal agar terlihat dalam (lubang nyata) */
     box-shadow: inset 0 15px 40px rgba(0,0,0,0.6), 0 15px 35px rgba(0,0,0,0.4);
     z-index: 10;
@@ -55,7 +56,8 @@ body {
     background: var(--paper);
     border-radius: 8px;
     z-index: 20; /* Di dalam saku, di belakang envelope-front */
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    /* Berikan shadow konsisten saja, hindari transisi box-shadow agar tidak lag */
+    box-shadow: 0 12px 30px rgba(0,0,0,0.3);
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -63,6 +65,7 @@ body {
     padding: 15px;
     box-sizing: border-box;
     background-image: radial-gradient(#fffdf2 0%, #f6ebd1 100%);
+    will-change: transform;
 }
 
 .card-inner {
@@ -135,7 +138,7 @@ body {
     width: 100%;
     z-index: 40;
     transform-origin: top;
-    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), z-index 0s 0.3s;
+    transition: transform 1.5s cubic-bezier(0.4, 0, 0.2, 1), z-index 0s 0.75s;
     transform-style: preserve-3d;
 }
 
@@ -164,7 +167,7 @@ body {
     align-items: center;
     font-size: 26px;
     box-shadow: 0 5px 15px rgba(0,0,0,0.4), inset 0 2px 5px rgba(255,255,255,0.6);
-    transition: all 0.5s ease;
+    transition: all 1.2s ease;
     border: 2px solid #fff3cd;
 }
 
@@ -216,7 +219,7 @@ small {
     font-weight: 300;
     letter-spacing: 1px;
     animation: pulse 2s infinite;
-    transition: opacity 0.5s;
+    transition: opacity 1s;
 }
 
 @keyframes pulse {
@@ -226,10 +229,35 @@ small {
 
 /* -- ANIMASI SAAT DIBUKA -- */
 
+.envelope-container.open {
+    animation: envelopeMove 4s cubic-bezier(0.3, 0.9, 0.3, 1) forwards;
+    animation-delay: 1.2s;
+}
+
+@keyframes envelopeMove {
+    0% {
+        transform: translateY(0);
+    }
+    30% {
+        /* Geser ke bawah agar kartu yang dipanggil naik tidak terpotong batas layar */
+        transform: translateY(120px);
+    }
+    100% {
+        /* Kembali perlahan ke posisi semula seiring turunnya kartu */
+        transform: translateY(0);
+    }
+}
+
 /* Sembunyikan Tulisan Hint */
 .envelope-container.open ~ .hint {
-    opacity: 0;
+    animation: fadeOutHint 0.5s forwards;
     pointer-events: none;
+}
+
+@keyframes fadeOutHint {
+    to {
+        opacity: 0;
+    }
 }
 
 /* Buka Tutup Amplop */
@@ -249,9 +277,9 @@ small {
     /* Stage 1: Geser ke atas (drawCard)
        Stage 2: z-index pindah ke depan (cardZIndex) */
     animation: 
-        drawCard 2.5s cubic-bezier(0.3, 0.9, 0.3, 1) forwards,
-        cardZIndex 2.5s linear forwards;
-    animation-delay: 0.4s;
+        drawCard 4s cubic-bezier(0.3, 0.9, 0.3, 1) forwards,
+        cardZIndex 4s linear forwards;
+    animation-delay: 1.2s;
 }
 
 @keyframes drawCard {
@@ -259,13 +287,13 @@ small {
         transform: translateY(0) rotate(0);
     }
     30% {
-        /* Naikkan kartu melewati saku depan */
-        transform: translateY(-280px) rotate(3deg);
+        /* Naikkan kartu lebih jauh ke atas untuk kompensasi amplop yang sedang turun */
+        transform: translateY(-400px) rotate(3deg);
     }
     100% {
         /* Turunkan sedikit di depan dan perbesar */
         transform: translateY(-20px) scale(1.15) rotate(0);
-        box-shadow: 0 35px 60px rgba(0,0,0,0.6);
+        /* Dihapus: animasi box-shadow agar frame-rate stabil (anti-lag) */
     }
 }
 
@@ -294,4 +322,156 @@ small {
     0% { opacity: 0; transform: scale(0.5) translateY(0); }
     50% { opacity: 1; transform: scale(1.2) translateY(-10px); }
     100% { opacity: 0; transform: scale(0.5) translateY(-20px); }
+}
+
+/* --- LENTERA (LANTERNS) --- */
+.lantern-wrapper {
+    position: absolute;
+    top: 0;
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transform-origin: top center;
+}
+
+.lantern-left {
+    left: 10%;
+    animation: swing 4s ease-in-out infinite alternate;
+    will-change: transform;
+}
+
+.lantern-right {
+    right: 10%;
+    animation: swing 3.5s ease-in-out infinite alternate-reverse;
+    will-change: transform;
+}
+
+/* Panjang tali / kabel lentera */
+.lantern-left .lantern-cable {
+    height: 180px;
+}
+.lantern-right .lantern-cable {
+    height: 130px;
+}
+
+.lantern-cable {
+    width: 2px;
+    background: linear-gradient(#b38728, #fbf5b7);
+}
+
+.lantern {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* Dihapus filter: drop-shadow karena kalkulasinya sangat memberatkan CPU saat lentera berayun */
+}
+
+.lantern-top {
+    width: 28px;
+    height: 12px;
+    background: var(--gold);
+    border-radius: 15px 15px 0 0;
+}
+
+.lantern-body {
+    width: 45px;
+    height: 55px;
+    background: rgba(251, 191, 36, 0.2);
+    border: 3px solid #d4af37;
+    border-radius: 8px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* Diganti dari drop-shadow filter agar performa mulus tanpa beban berlebih */
+    box-shadow: 0 0 15px rgba(251, 191, 36, 0.5), inset 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+/* Pola Garis Lentera */
+.lantern-body::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(90deg, transparent, transparent 12px, #d4af37 12px, #d4af37 14px);
+    z-index: 2;
+}
+
+/* Cahaya Dalam Lentera */
+.lantern-glow {
+    width: 25px;
+    height: 25px;
+    background: radial-gradient(circle, #ffea00 0%, rgba(255, 234, 0, 0) 70%);
+    animation: lanternPulse 2s infinite alternate;
+    z-index: 1;
+}
+
+.lantern-bottom {
+    width: 24px;
+    height: 8px;
+    background: var(--gold);
+    border-radius: 0 0 8px 8px;
+    position: relative;
+}
+
+/* Rumbai Bawah (Tassel) */
+.lantern-bottom::after {
+    content: '';
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 8px;
+    height: 25px;
+    background: repeating-linear-gradient(90deg, #d4af37, #d4af37 1px, transparent 1px, transparent 2px);
+    border-radius: 0 0 5px 5px;
+}
+
+@keyframes swing {
+    0% { transform: rotate(-6deg); }
+    100% { transform: rotate(6deg); }
+}
+
+@keyframes lanternPulse {
+    0% {
+        transform: scale(0.8);
+        opacity: 0.6;
+    }
+    100% {
+        transform: scale(1.6);
+        opacity: 1;
+    }
+}
+
+/* --- ELEMEN KEMERIAHAN --- */
+
+.confetti {
+    position: absolute;
+    z-index: 100;
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    /* Tiga tahap: ledakan ke atas, lalu jatuh pelan-pelan ke bawah */
+    animation: confettiBurst 4s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+}
+
+@keyframes confettiBurst {
+    0% {
+        transform: translate(-50%, -50%) rotate(0deg) scale(0);
+        opacity: 0;
+    }
+    5% {
+        opacity: 1;
+        transform: translate(-50%, -50%) rotate(0deg) scale(1.5);
+    }
+    30% {
+        /* Mencapai titik tertinggi ledakan */
+        transform: translate(calc(-50% + var(--tx) * 0.5), var(--sy)) rotate(var(--r1)) scale(1);
+        opacity: 1;
+    }
+    100% {
+        /* Jatuh ke bawah gaya gravitasi */
+        transform: translate(calc(-50% + var(--tx)), var(--fy)) rotate(var(--r2)) scale(0.8);
+        opacity: 0;
+    }
 }
